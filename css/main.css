@@ -155,8 +155,8 @@ font-size: 33px !important
 #legend-title {
   position: fixed;
   bottom: 30px;
-  right: 40px;
-  width: 300px;
+  right: 5px;
+  width: 375px;
   height: 20px;
   z-index: 1000;
   background: #343a4000;
