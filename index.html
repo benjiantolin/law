@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="authors" content="Benji Antolin">
+  <title>Oregon Language Access Webtool</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+  <link href="https://fonts.googleapis.com/css?family=Titillium+Web" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Oswald&display=swap" rel="stylesheet">
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
+  <link href="css/c3.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/simplebar.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  <script src="js/d3.js"></script>
+  <script src="js/c3.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+  <script src="js/chroma.min.js"></script>
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="js/simplebar.min.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+  <script src="https://rawgit.com/mapbox/mapbox-gl-leaflet/master/leaflet-mapbox-gl.js"></script>
+</head>
+
+<body>
+  <main>
+    <div class="loader"></div>
+    <div id="info">
+      <div id="infobuttons">
+        <span><a href="https://facebook.com/sharer.php?u=https://benjiantolin.github.io/law/" target="_blank"><i class="fab fa-facebook-square"></i></a></span>
+        <span><a href="https://github.com/benjiantolin/law" target="_blank"><i class="fab fa-github-square"></i></a></span>
+        <span><a data-toggle="modal" data-target="#infowindow"><i class="nav fas fa-info-circle"></i></a></span>
+      </div>
+      <div id="title" style="font-size:23px"><i class="fas fa-language"></i> Oregon Language Access Webtool</div>
+
+
+
+      <p><span id="placename">Oregon State</span> <span id="hint"> Click on map to review county statistics.</span></p>
+
+      <div id="deck-1" class="card-deck counts">
+        <div class="card">
+          <div class="card-body confirmed">
+            <h5 class="card-title">POPULATION 5+ IN LIMITED ENGLISH SPEAKING HOUSEHOLDS
+              <i class="fas fa-question-circle tooltip">
+                <span class="tooltiptext">
+                  Survey/Program: American Community Survey <br>
+                  Universe: Population 5 years and over in households in which no one 14 and over speaks English only or speaks a language other than English at home and speaks English very well <br>
+                  TableID: B16003 <br>
+                  Product: 2017: ACS 5-Year Estimates Detailed Tables
+                  <span>
+              </i>
+            </h5>
+          </div>
+          <p class="card-text"><span class="cases-count"></span>
+          </p>
+        </div>
+      </div>
+
+      <div id="deck-3" class="card-deck counts">
+        <div class="card">
+          <center>
+            <p>
+              LANGUAGE SPOKEN AT HOME FOR THE POPULATION 5 YEARS AND OVER
+              <i class="fas fa-question-circle tooltip">
+                <span class="tooltiptext">
+                  Survey/Program: American Community Survey<br>
+                  Universe: Population 5 years and over<br>
+                  TableID: C16001<br>
+                  Product: 2017: ACS 5-Year Estimates Detailed Tables
+                  <span>
+              </i>
+            </p>
+          </center>
+          <div id="chart"></div>
+        </div>
+      </div>
+
+      <!-- <div id="deck-1" class="card-deck counts">
+        <div class="card">
+          <div class="card-body confirmed">
+            <h5 class="card-title">% Speaks English well</h5>
+          </div>
+          <p class="card-text"><span class="death-count"></span><span class="death-new-count"></span></p>
+        </div>
+        <div class="card">
+          <div class="card-body confirmed">
+            <h5 class="card-title">% Speaks English less than well</h5>
+          </div>
+          <p class="card-text"><span class="neg-count"></span><span class="neg-new-count"></span></p>
+        </div>
+      </div> -->
+
+
+    </div>
+
+
+    </div>
+
+    <div id="map"></div>
+
+
+
+    <div id="legend-panel">
+
+      <div class="card-deck legend">
+        <div id="legend-title">
+          <div class="card">
+            <div class="card-body legend-color-1">
+              <h5 class="card-title" style="color:black">% of Pop 5+ in LEP Households</h5>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body legend-color-1">
+            <h5 class="card-title" style="color:black">0.38%</h5>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body  legend-color-2">
+            <h5 class="card-title" style="color:black">0.38%-1.43%</h5>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body  legend-color-3">
+            <h5 class="card-title" style="color:black">1.44%-3.24%</h5>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body  legend-color-4">
+            <h5 class="card-title" style="color:black">3.25%-6.03%</h5>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body legend-color-5">
+            <h5 class="card-title" style="color:black">>6.03%</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="infowindow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width:1250px!important">
+      <div class="modal-content">
+        <div class="modal-header">
+          <strong class="modal-title" id="exampleModalLongTitle">Data Source & Attributions</strong>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="demo" class="carousel " data-ride="carousel">
+            <p>This web application is intended only as a guide and is based on US Census data.</p>
+            <p>Chart Data Source: U.S. Census Bureau, 2013-2017 American Community Survey 5-Year Estimates, <a href="https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_C16001&prodType=table"
+                target="_blank">Table: C16001</a></p>
+            <p>Choropleth Data Source: U.S. Census Bureau, 2013-2017 American Community Survey 5-Year Estimates, <a href="https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B16003&prodType=table"
+                target="_blank">Table: B16003</a></p>
+            <div>
+              * If you have any questions or concerns, please contact <a href="mailto:benjiantolin@gmail.com">Benji Antolin</a>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div id="resourcewindow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width:1250px!important">
+      <div class="modal-content">
+        <div class="modal-header">
+          <strong class="modal-title" id="exampleModalLongTitle">Coronavirus information resources</strong>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="demo" class="carousel " data-ride="carousel">
+            <p><a href="https://govstatus.egov.com/OR-OHA-COVID-19" target="_blank">Oregon Health Authority</a></p>
+            <p><a href="https://www.cdc.gov/coronavirus/2019-ncov/index.html" target="_blank">Center for Disease Control and Prevention (CDC)</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- <div class="modal-dialog modal-dialog-centered" role="document" style="width:1250px!important">
+      <div class="modal-content">
+        <div class="modal-header">
+          <strong class="modal-title" id="exampleModalLongTitle">Disclaimer</strong>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="demo" class="carousel slide" data-ride="carousel">
+            <p>This web application is intended only as a guide and is based on US Census data.</p>
+            <p>Chart Data Source: U.S. Census Bureau, 2013-2017 American Community Survey 5-Year Estimates, <a href="https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_C16001&prodType=table" target="_blank">Table: C16001</a></p>
+            <p>Choropleth Data Source: U.S. Census Bureau, 2013-2017 American Community Survey 5-Year Estimates, <a href="https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=ACS_17_5YR_B16003&prodType=table" target="_blank">Table: B16003</a></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="col-md-10">
+            <span id="mapType">Don't show this info again.</span>
+            <label id="nextTimeSwitcher" class="switch">
+              <input type="checkbox">
+            </label>
+          </div>
+          <button id="disclaimer-close" type="button" class="btn btn-primary col-md-2">close</button>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <script>
+    $(window).ready(function() {
+      $('.loader').fadeOut("slow");
+
+      $("#nextTimeSwitcher input").on("click", function() {
+        if ($("#nextTimeSwitcher input:checked").val() === "on") {
+          localStorage.setItem('popState', 'shown');
+        } else {
+
+          localStorage.setItem('popState', 'notShown');
+        }
+      })
+
+      if (localStorage.getItem('popState') != 'shown') {
+        console.log("show disclaimer");
+        $('#disclaimer').modal('show');
+
+      } else {
+        console.log("hide disclaimer");
+        $('#disclaimer').modal('hide');
+      }
+      $('#disclaimer-close').click(function(e) // You are clicking the close button
+        {
+          $('#disclaimer').fadeOut(); // Now the pop up is hiden.
+          $('#disclaimer').modal('hide');
+        });
+    });
+
+    $(".showFrontPage").on("click", function() {
+      $('#disclaimer').modal('show');
+      localStorage.setItem('popState', 'notShown');
+    })
+
+    $("#date").text("Last update: 4/1/2020");
+
+
+    var mymap = L.map('map', {
+      center: [44, -122.5],
+      zoomControl: false,
+      zoom: 7,
+      maxZoom: 10,
+      minZoom: 3,
+    });
+
+    new L.Control.Zoom({
+      position: 'topright'
+    }).addTo(mymap);
+
+
+    var gray = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png');
+    var voyager =
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png').addTo(mymap);
+    var satellite =
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
+
+    // mapbox_token = 'pk.eyJ1IjoiYmVuamlhbnRvbGluIiwiYSI6ImNqcm9uazFpczE1ajM0M3Buem83ZGpuY3oifQ.OpSUwJRtxBMPDFUUJnhLVg';
+    //       var gl = L.mapboxGL({
+    //           accessToken: mapbox_token,
+    //           style: 'mapbox://styles/benjiantolin/ck85fv6ct04i71iocpwjx45k8',
+    //           // attribution: 'Created By <a href="https://github.com/benjiantolin/">Benjamin Antolin</a> based on the <a href="Assets/license.txt">Mapbox basic style</a>'
+    //       }).addTo(map);
+
+
+    var baseLayers = {
+      'CartoDB Light': gray,
+      'CartoDB Voyager': voyager,
+      'ESRI Satellite': satellite
+    }
+
+
+
+    var chart;
+
+    // 6. Set function for color ramp
+    var colors = chroma.scale('PuBuGn').colors(6);
+
+    for (i = 0; i < 6; i++) {
+      $('head').append($("<style> .region-color-" + (i + 1).toString() + " { color: " + colors[i] + "; font-size: 15px; text-shadow: 0 0 3px #ffffff;} </style>"));
+      $('head').append($("<style> .legend-color-" + (i + 1).toString() + " { background: " + colors[i] + "; font-size: 15px; text-shadow: 0 0 3px #ffffff;} </style>"));
+    }
+
+
+
+    Promise.all([
+      d3.csv('assets/timeseries/langNew.csv'),
+      d3.json("assets/Lang.geojson"),
+      d3.csv('assets/timeseries/langOR.csv'),
+    ]).then(function(datasets) {
+
+      $.fn.digits = function() {
+        return this.each(function() {
+          $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+        })
+      }
+
+      var lang = ["Language"];
+      var totLang = ["Speaks"];
+      var well = ['Speak English "very well"']
+      var notWell = ['Speak English less than "very well"']
+
+      var total = ["Total"];
+      var tCount = ["Total count"];
+      var wCount = ["Well count"]
+      var lCount = ["Less than well count"]
+
+      var oregon = {
+        name: "Oregon",
+        tl: totLang,
+        w: well,
+        nw: notWell,
+        tc: tCount,
+        wc: wCount,
+        lc: lCount,
+      }
+
+
+      function stateCounts(i) {
+        ttl = 0, tw = 0, tnw = 0;
+        datasets[0].forEach(function(d) {
+          lang.push(d["Language"]);
+          ttl = 0, tw = 0, tnw = 0;
+          current = d;
+          delete current["Language"];
+          if (i["name"] = "Oregon") {
+            d = current[i["name"]];
+            if (d == undefined) {
+              d = "0"
+            };
+            items = d.split("-");
+            switch (items.length) {
+              case 3:
+                tnw += +items[2];
+              case 2:
+                tw += +items[1];
+              case 1:
+                ttl += +items[0];
+                break;
+            };
+
+          }
+          i["tl"].push(ttl);
+          // i["s"].push(sp);
+          i["w"].push(tw);
+          i["nw"].push(tnw);
+        });
+
+        ttc = 0, twc = 0, tlc = 0;
+        datasets[2].forEach(function(d) {
+          total.push(d["Total"]);
+          ttc = 0, twc = 0, tlc = 0;
+          current = d;
+          delete current["Total"];
+          if (i["name"] = "Oregon") {
+            d = current[i["name"]];
+            if (d == undefined) {
+              d = "0"
+            };
+            items = d.split("-");
+            switch (items.length) {
+              case 3:
+                tlc += +items[2];
+              case 2:
+                twc += +items[1];
+              case 1:
+                ttc += +items[0];
+                break;
+            };
+
+          }
+          i["tc"].push(ttc);
+          // i["s"].push(sp);
+          i["wc"].push(twc);
+          i["lc"].push(tlc);
+        });
+
+        var wellPerc = i.wc[1];
+        var lessPerc = i.lc[1];
+
+        $(".cases-count").text('2.9%');
+
+        $("#deck-1 > div:nth-child(1) > p > span.cases-count").digits();
+        // $("#deck-1 > div:nth-child(1) > p > span.death-count").digits();
+        // $("#deck-1 > div:nth-child(2) > p > span.neg-count").digits();
+
+
+        // $(".confirmed-new-count").text("+"+cc);
+        // $(".active-new-count").text(cd);
+
+
+        // nc = i.c[i.c.length - 1] - i.c[i.c.length - 2];
+        // nd = i.d[i.d.length - 1] - i.d[i.d.length - 2];
+        // nnt = i.neg[i.neg.length - 1] - i.neg[i.neg.length - 2];
+
+        // if (nc > 0) {
+        //   $(".confirmed-new-count").text("+" + nc.toString());
+        // } else if (nc == 0) {
+        //   $(".confirmed-new-count").text("");
+        // } else {
+        //
+        //   $(".confirmed-new-count").text(nc.toString());
+        // }
+        //
+        // if (nd > 0) {
+        //   $(".death-new-count").text("+" + nd.toString());
+        // } else if (nd == 0) {
+        //   $(".death-new-count").text("")
+        // } else {
+        //   $(".death-new-count").text(nd.toString());
+        // }
+
+        // if (nnt > 0) {
+        //   $(".neg-new-count").text("+" + nnt.toString());
+        // } else if (nnt == 0) {
+        //   $(".neg-new-count").text("")
+        // } else {
+        //   $(".neg-new-count").text(nnt.toString());
+        // }
+        //
+        //
+        if (i["name"] == "Oregon") {
+          $("#placename").text(i["name"] + " State");
+
+        } else {
+
+          $("#placename").text(i["name"] + " County");
+
+        }
+
+
+      }
+
+      function countyCounts(i) {
+        ttl = 0, tw = 0, tnw = 0;
+        datasets[0].forEach(function(d) {
+          lang.push(d["Language"]);
+          ttl = 0, tw = 0, tnw = 0;
+          current = d;
+          delete current["Language"];
+          if (i["name"] != "Oregon") {
+            d = current[i["name"]];
+            if (d == undefined) {
+              d = "0"
+            };
+            items = d.split("-");
+            switch (items.length) {
+              case 3:
+                tnw += +items[2];
+              case 2:
+                tw += +items[1];
+              case 1:
+                ttl += +items[0];
+                break;
+            };
+
+          } else {
+
+            Object.values(current).forEach(function(d) {
+              if (d == undefined) {
+                d = "0"
+              };
+              items = d.split("-");
+              switch (items.length) {
+                case 3:
+                  tnw += +items[2];
+                case 2:
+                  tw += +items[1];
+                case 1:
+                  ttl += +items[0];
+                  break;
+              };
+
+            });
+            //
+          }
+          i["tl"].push(ttl);
+          // i["s"].push(sp);
+          i["w"].push(tw);
+          i["nw"].push(tnw);
+        });
+
+        $(".cases-count").text(ttl);
+        // $(".death-count").text(tw);
+        // $(".neg-count").text(tnw);
+        $("#deck-1 > div:nth-child(1) > p > span.cases-count").digits();
+        $("#deck-1 > div:nth-child(1) > p > span.death-count").digits();
+        $("#deck-1 > div:nth-child(2) > p > span.neg-count").digits();
+        // nc = i.c[i.c.length - 1] - i.c[i.c.length - 2];
+        // nd = i.d[i.d.length - 1] - i.d[i.d.length - 2];
+        // nnt = i.neg[i.neg.length - 1] - i.neg[i.neg.length - 2];
+
+        // if (nc > 0) {
+        //   $(".confirmed-new-count").text("+" + nc.toString());
+        // } else if (nc == 0) {
+        //   $(".confirmed-new-count").text("");
+        // } else {
+        //
+        //   $(".confirmed-new-count").text(nc.toString());
+        // }
+        //
+        // if (nd > 0) {
+        //   $(".death-new-count").text("+" + nd.toString());
+        // } else if (nd == 0) {
+        //   $(".death-new-count").text("")
+        // } else {
+        //   $(".death-new-count").text(nd.toString());
+        // }
+
+        // if (nnt > 0) {
+        //   $(".neg-new-count").text("+" + nnt.toString());
+        // } else if (nt == 0) {
+        //   $(".neg-new-count").text("")
+        // } else {
+        //   $(".neg-new-count").text(nnt.toString());
+        // }
+
+
+        if (i["name"] == "Oregon") {
+          $("#placename").text(i["name"] + " State");
+
+        } else {
+
+          $("#placename").text(i["name"] + " County");
+
+        }
+
+
+      }
+
+
+
+      function setColor(lepHH) {
+        var id = 0;
+        if (lepHH > 6.03) {
+          id = 4;
+        } else if (lepHH > 3.25 && lepHH <= 6.03) {
+          id = 3;
+        } else if (lepHH > 1.44 && lepHH <= 3.25) {
+          id = 2;
+        } else if (lepHH > 0.38 && lepHH <= 1.44) {
+          id = 1;
+        } else {
+          id = 0;
+        }
+        return colors[id];
+      }
+
+
+      function style(feature) {
+        return {
+          fillColor: setColor(feature.properties.shareLep),
+          fillOpacity: 0.4,
+          weight: 2,
+          opacity: 1,
+          color: '#b4b4b4',
+          dashArray: '4'
+        };
+      }
+
+
+
+      function highlightFeature(e) {
+        // e indicates the current event
+        var layer = e.target; //the target capture the object which the event associates with
+        layer.setStyle({
+          weight: 4,
+          opacity: 0.8,
+          color: '#e3e3e3',
+          fillColor: '#00ffd9',
+          fillOpacity: 0.1
+        });
+        // bring the layer to the front.
+        layer.bringToFront();
+      }
+
+      // 3.2.2 zoom to the highlighted feature when the mouse is clicking onto it.
+      function zoomToFeature(e) {
+        // mymap.fitBounds(e.target.getBounds());
+        L.DomEvent.stopPropagation(e);
+        $("#hint").text("Click here to for State trend.");
+
+
+        var lang = ["Language"];
+        var totLang = ["Speaks"];
+        var well = ['Speak English "very well"']
+        var notWell = ['Speak English less than "very well"']
+        // var negTests = ["Negative Tests"];
+        var place = {
+          name: e.target.feature.properties.Geography,
+          tl: totLang,
+          w: well,
+          nw: notWell,
+        }
+
+        countyCounts(place);
+
+        $(".cases-count").text(e.target.feature.properties.shareLep.toFixed(2) + '%');
+        $(".death-count").text(tw);
+        $(".neg-count").text(tnw);
+
+        chart.load({
+          unload: true,
+          columns: [place.w, place.nw],
+        });
+
+
+      }
+
+      // 3.2.3 reset the hightlighted feature when the mouse is out of its region.
+      function resetHighlight(e) {
+        county.resetStyle(e.target);
+
+      }
+
+      // 3.3 add these event the layer obejct.
+      function onEachFeature(feature, layer) {
+        layer.on({
+          mouseover: highlightFeature,
+          click: zoomToFeature,
+          mouseout: resetHighlight
+        });
+      }
+
+
+
+      var county = new L.GeoJSON(datasets[1], {
+        style: style,
+        onEachFeature: onEachFeature
+      }).addTo(mymap);
+      // mymap.fitBounds(county.getBounds());
+
+      new L.control.layers(baseLayers, {
+        // "Infection Level": areas,
+        // "Infection Case(s) &nbsp;&nbsp; <i class='fas fa-users community'></i>": cases,
+        // "Infected Community &nbsp;&nbsp; <i class='fas fa-procedures community'></i>": communities
+      }, {
+        collapsed: false
+      }).addTo(mymap);
+
+
+
+      $("#hint").on("click", function() {
+        // stateCounts(oregon);
+        $(".cases-count").text('2.9%');
+        $("#placename").text('Oregon State');
+        chart.load({
+          columns: [oregon.w, oregon.nw],
+          unload: ['Speak English "very well"', 'Speak English less than "very well"'],
+        });
+        $("#hint").text("Click on map to review county trend.");
+
+      });
+
+
+      function onMapClick(e) {
+        $("#hint").click();
+      }
+
+      mymap.on('click', onMapClick);
+
+      stateCounts(oregon);
+
+      var chartLang = lang.slice(1, 13);
+
+      chart = c3.generate({
+        data: {
+          order: 'asc',
+          columns: [oregon.w, oregon.nw],
+          type: 'bar',
+          groups: [
+            ['Speak English "very well"', 'Speak English less than "very well"']
+          ],
+        },
+        axis: {
+          x: {
+            type: "category",
+            categories: [chartLang[0], chartLang[1], chartLang[2], chartLang[3], chartLang[4], chartLang[5], chartLang[6], chartLang[7], chartLang[8], chartLang[9], chartLang[10], chartLang[11]]
+          },
+          y: {
+            tick: {
+              rotate: 45
+            },
+          },
+          rotated: true
+        },
+        tooltip: {
+          format: {
+            value: function(value, ratio, id) {
+              var format = id === 'data1' ? d3.format(',') : d3.format(',');
+              return format(value);
+            }
+          },
+          show: true,
+          grouped: true,
+        },
+        bindto: "#chart"
+      });
+
+    });
+
+    /////////////////////////
+    $(".leaflet-control-attribution")
+      .css("background-color", "transparent")
+      .html("");
+  </script>
+
+</body>
+
+</html>
